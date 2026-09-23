@@ -1,0 +1,46 @@
+{
+  "ok": 10,
+  "fail": 0,
+  "roles": [
+    {
+      "role": "super_admin",
+      "status": "ok"
+    },
+    {
+      "role": "admin",
+      "status": "ok"
+    },
+    {
+      "role": "registration",
+      "status": "ok"
+    },
+    {
+      "role": "pedagogical",
+      "status": "ok"
+    },
+    {
+      "role": "professor",
+      "status": "ok"
+    },
+    {
+      "role": "secretary",
+      "status": "ok"
+    },
+    {
+      "role": "finance",
+      "status": "ok"
+    },
+    {
+      "role": "charge",
+      "status": "ok"
+    },
+    {
+      "role": "students",
+      "status": "ok"
+    },
+    {
+      "role": "pais",
+      "status": "ok"
+    }
+  ]
+}
