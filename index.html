@@ -92,19 +92,157 @@
     }
 
     .sticky-bar label {
-      font-size: .85rem;
+      font-size: .78rem;
       font-weight: 600;
       color: var(--primary);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: inline-block;
+    }
+
+    .dash-picker {
+      position: relative;
+      min-width: 300px;
     }
 
     .dash-select {
-      min-width: 260px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--primary-100);
+      appearance: none;
+      -webkit-appearance: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-width: 300px;
+      padding: 12px 14px 12px 16px;
+      border-radius: 12px;
+      border: 1.5px solid var(--primary-100);
       font: inherit;
+      font-weight: 600;
+      font-size: .95rem;
+      color: var(--primary-700);
+      background: linear-gradient(135deg, var(--primary-50) 0%, #fff 60%);
+      box-shadow: 0 2px 8px rgba(88, 57, 141, .08);
+      cursor: pointer;
+      outline: none;
+      text-align: left;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .dash-select::after {
+      content: '';
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2358398d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") center / contain no-repeat;
+      transition: transform .2s ease;
+    }
+
+    .dash-picker.open .dash-select::after {
+      transform: rotate(180deg);
+    }
+
+    .dash-select:hover,
+    .dash-picker.open .dash-select {
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(88, 57, 141, .14);
+    }
+
+    .dash-select:focus,
+    .dash-select:focus-visible {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(88, 57, 141, .18), 0 4px 14px rgba(88, 57, 141, .12);
+    }
+
+    .dash-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: none;
+      max-height: min(420px, 70vh);
+      overflow-y: auto;
+      padding: 8px;
+      border-radius: 14px;
+      border: 1.5px solid var(--primary-100);
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(88, 57, 141, .18);
+    }
+
+    .dash-picker.open .dash-menu {
+      display: block;
+    }
+
+    .dash-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 11px 12px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
       color: var(--text);
+      font: inherit;
+      font-size: .92rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      outline: none;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    .dash-option:hover,
+    .dash-option:focus-visible {
+      outline: none;
       background: var(--primary-50);
+      color: var(--primary-700);
+    }
+
+    .dash-option.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(88, 57, 141, .25);
+    }
+
+    .dash-option .opt-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--primary-100);
+      color: var(--primary);
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .dash-option.active .opt-num {
+      background: rgba(255, 255, 255, .22);
+      color: #fff;
+    }
+
+    .dash-option .opt-text {
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .dash-option .opt-sub {
+      display: block;
+      margin-top: 2px;
+      font-size: .75rem;
+      font-weight: 500;
+      opacity: .65;
+    }
+
+    .dash-option.active .opt-sub {
+      opacity: .85;
     }
 
     .wrap {
@@ -531,6 +669,11 @@
         min-width: 100%;
         width: 100%;
       }
+
+      .dash-picker {
+        min-width: 100%;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -549,20 +692,70 @@
   <div class="sticky-bar">
     <div class="sticky-bar-inner">
       <div>
-        <label for="dashSelect">Choose dashboard</label><br />
-        <select id="dashSelect" class="dash-select">
-          <option value="overview">Mindmap — Complete flow</option>
-          <option value="super_admin">1. Super Admin</option>
-          <option value="registration">2. Registo Académico</option>
-          <option value="pedagogical">3. Gestão Pedagógica</option>
-          <option value="professor">4. Professor</option>
-          <option value="secretary">5. Secretaria</option>
-          <option value="admin">6. Direção (Admin)</option>
-          <option value="finance">7. Finanças</option>
-          <option value="charge">8. Cobrança</option>
-          <option value="students">9. Estudante</option>
-          <option value="pais">10. Pais</option>
-        </select>
+        <label id="dashSelectLabel">Choose dashboard</label><br />
+        <div class="dash-picker" id="dashPicker">
+          <button type="button" class="dash-select" id="dashSelectBtn" aria-haspopup="listbox"
+            aria-expanded="false" aria-labelledby="dashSelectLabel">
+            <span id="dashSelectLabelText">Mindmap — Complete flow</span>
+          </button>
+          <div class="dash-menu" id="dashMenu" role="listbox" aria-labelledby="dashSelectLabel">
+            <button type="button" class="dash-option active" role="option" data-value="overview"
+              data-label="Mindmap — Complete flow" aria-selected="true">
+              <span class="opt-num">★</span>
+              <span class="opt-text">Mindmap<span class="opt-sub">Complete school flow</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="super_admin"
+              data-label="1. Super Admin" aria-selected="false">
+              <span class="opt-num">1</span>
+              <span class="opt-text">Super Admin<span class="opt-sub">System setup &amp; rules</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="registration"
+              data-label="2. Registo Académico" aria-selected="false">
+              <span class="opt-num">2</span>
+              <span class="opt-text">Registo Académico<span class="opt-sub">Student registration</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="pedagogical"
+              data-label="3. Gestão Pedagógica" aria-selected="false">
+              <span class="opt-num">3</span>
+              <span class="opt-text">Gestão Pedagógica<span class="opt-sub">Classes &amp; timetable</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="professor"
+              data-label="4. Professor" aria-selected="false">
+              <span class="opt-num">4</span>
+              <span class="opt-text">Professor<span class="opt-sub">Grades &amp; lessons</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="secretary"
+              data-label="5. Secretaria" aria-selected="false">
+              <span class="opt-num">5</span>
+              <span class="opt-text">Secretaria<span class="opt-sub">Office support</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="admin"
+              data-label="6. Direção (Admin)" aria-selected="false">
+              <span class="opt-num">6</span>
+              <span class="opt-text">Direção (Admin)<span class="opt-sub">School direction</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="finance"
+              data-label="7. Finanças" aria-selected="false">
+              <span class="opt-num">7</span>
+              <span class="opt-text">Finanças<span class="opt-sub">Fees &amp; payments</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="charge"
+              data-label="8. Cobrança" aria-selected="false">
+              <span class="opt-num">8</span>
+              <span class="opt-text">Cobrança<span class="opt-sub">Collections</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="students"
+              data-label="9. Estudante" aria-selected="false">
+              <span class="opt-num">9</span>
+              <span class="opt-text">Estudante<span class="opt-sub">Student portal</span></span>
+            </button>
+            <button type="button" class="dash-option" role="option" data-value="pais"
+              data-label="10. Pais" aria-selected="false">
+              <span class="opt-num">10</span>
+              <span class="opt-text">Pais<span class="opt-sub">Parent portal</span></span>
+            </button>
+          </div>
+        </div>
       </div>
       <div style="font-size:.82rem;color:#666;max-width:420px;">
         Start with <strong>Mindmap</strong>, then: Super Admin → Pedagogical → Registry → Finance → Professor →
@@ -2100,8 +2293,12 @@
 
   <script>
     (function () {
-      var select = document.getElementById('dashSelect');
+      var picker = document.getElementById('dashPicker');
+      var btn = document.getElementById('dashSelectBtn');
+      var labelText = document.getElementById('dashSelectLabelText');
+      var options = document.querySelectorAll('.dash-option');
       var sections = document.querySelectorAll('.dash-section');
+      var current = 'overview';
 
       function showDash(id) {
         sections.forEach(function (sec) {
@@ -2112,24 +2309,57 @@
       function scrollToDash(id) {
         var sec = document.getElementById('dash-' + id);
         if (!sec) return;
-        // Wait one frame so the newly shown section has layout, then scroll to its heading
         requestAnimationFrame(function () {
           sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       }
 
-      select.addEventListener('change', function () {
-        showDash(select.value);
-        scrollToDash(select.value);
+      function setOpen(open) {
+        picker.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
+      function selectDash(id, scroll) {
+        current = id;
+        options.forEach(function (opt) {
+          var on = opt.getAttribute('data-value') === id;
+          opt.classList.toggle('active', on);
+          opt.setAttribute('aria-selected', on ? 'true' : 'false');
+          if (on) {
+            labelText.textContent = opt.getAttribute('data-label') || opt.textContent.trim();
+          }
+        });
+        showDash(id);
+        if (scroll) scrollToDash(id);
+      }
+
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setOpen(!picker.classList.contains('open'));
+      });
+
+      options.forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          selectDash(opt.getAttribute('data-value'), true);
+          setOpen(false);
+        });
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!picker.contains(e.target)) setOpen(false);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') setOpen(false);
       });
 
       document.querySelectorAll('.dash-section').forEach(function (sec) {
         var buttons = sec.querySelectorAll('.tab-btn');
         var panels = sec.querySelectorAll('.tab-panel');
-        buttons.forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var id = btn.getAttribute('data-tab');
-            buttons.forEach(function (b) { b.classList.toggle('active', b === btn); });
+        buttons.forEach(function (tabBtn) {
+          tabBtn.addEventListener('click', function () {
+            var id = tabBtn.getAttribute('data-tab');
+            buttons.forEach(function (b) { b.classList.toggle('active', b === tabBtn); });
             panels.forEach(function (p) {
               p.classList.toggle('active', p.getAttribute('data-panel') === id);
             });
@@ -2137,7 +2367,7 @@
         });
       });
 
-      showDash(select.value);
+      selectDash(current, false);
     })();
   </script>
 
